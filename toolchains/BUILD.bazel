@@ -4,6 +4,7 @@ load(
     "@io_bazel_rules_scala//scala:providers.bzl",
     _declare_scalac_provider = "declare_scalac_provider",
 )
+load(":jdk_repos.bzl", "repo_jdk_version")
 
 scala_toolchain(
     name = "wix_defaults_global_toolchain_impl",
@@ -30,7 +31,7 @@ toolchain(
 )
 
 default_java_toolchain(
-    name = "wix_default_java_toolchain",
+    name = "wix_default_java8_toolchain",
     bootclasspath = ["@bazel_tools//tools/jdk:platformclasspath"],
     jvm_opts = JDK8_JVM_OPTS,
     misc = DEFAULT_JAVACOPTS + [
@@ -52,8 +53,8 @@ default_java_toolchain(
         "-deprecation",
         "-XepDisableAllChecks",
     ],
-    source_version = "11",
-    target_version = "11",
+    source_version = "8",
+    target_version = "8",
     visibility = ["//visibility:public"],
 )
 
@@ -72,6 +73,12 @@ _declare_scalac_provider(
         "@org_scala_lang_scala_reflect",
         "@org_scala_lang_scala_compiler",
     ],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "wix_default_java_toolchain",
+    actual = "wix_default_java11_toolchain" if repo_jdk_version == "11" else "wix_default_java8_toolchain",
     visibility = ["//visibility:public"],
 )
 
