@@ -4,7 +4,8 @@ def agent_setup_flags(extra_runtime_dirs, extra_runtime_entries):
         "-Dextra.dirs=" + ":".join(extra_runtime_dirs),
         "-Dextra.runtime.dirs=" + ":".join(extra_runtime_entries),
         # this is needed to allow TestsJavaAgent to access internal fields and methods
-        "--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED"
+        "--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED"
     ]
 
     # test-agent-deploy jar is added to bootcalsspath becasue when the test classpath is very long

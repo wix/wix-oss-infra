@@ -1,12 +1,11 @@
-
 filegroup(
     name = "sources",
     data = ["WORKSPACE"],
-    visibility = ["//visibility:public"]
+    visibility = ["//visibility:public"],
 )
 
 alias(
     name = "bootsrapify",
     actual = "//scripts/post-migration-commons:bootsrapify",
-    visibility = ["//visibility:public"]
+    visibility = ["//visibility:public"],
 )

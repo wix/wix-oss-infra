@@ -1,7 +1,7 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-protobuf_version="3.11.2"
-protobuf_version_sha256="e8c7601439dbd4489fe5069c33d374804990a56c2f710e00227ee5d8fd650e67"
+protobuf_version = "3.12.4"
+protobuf_version_sha256="512e5a674bf31f8b7928a64d8adf73ee67b8fe88339ad29adaa3b84dbaa570d8"
 
 def google_protobuf():
   if native.existing_rule("zlib") == None:
