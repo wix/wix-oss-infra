@@ -3,7 +3,7 @@ package(default_visibility = ["//visibility:public"])
 load("@io_bazel_rules_scala//specs2:specs2_junit.bzl", "specs2_junit_dependencies")
 
 _specs2_deps = specs2_junit_dependencies() + [
-    "//external:io_bazel_rules_scala/dependency/junit/junit"
+    "//external:io_bazel_rules_scala/dependency/junit/junit",
 ]
 
 scala_library(
@@ -11,44 +11,44 @@ scala_library(
     srcs = [
         "TestAgentMatchers.scala",
     ],
-    deps = _specs2_deps
+    deps = _specs2_deps,
 )
-
 
 scala_library(
     name = "abstract_test",
     srcs = [
         "AbstractTestAgentTest.scala",
     ],
-    deps = _specs2_deps + [":matchers"]
+    deps = _specs2_deps + [":matchers"],
 )
 
 java_library(
     name = "txt_files",
-    resources = ["//test-agent/src/test/resources:test_files"],
     resource_strip_prefix = "test-agent/src/test/resources/",
+    resources = ["//test-agent/src/test/resources:test_files"],
 )
 
 specs2_unit_test(
     name = "test-agent",
+    srcs = [
+        "TestAgentTest.scala",
+    ],
+    data = [
+    ],
     deps = [
         ":abstract_test",
         ":matchers",
-        ":txt_files"
-    ],
-    data = [
-
-    ],
-    srcs = [
-        "TestAgentTest.scala",
+        ":txt_files",
     ],
 )
 
 specs2_unit_test(
     name = "test-agent-override",
-    deps = [
-        ":abstract_test",
-        ":matchers"
+    srcs = [
+        "TestAgentOverrideTest.scala",
+    ],
+    data = [
+        "//test-agent/src/test/resources:test_files",
     ],
     extra_runtime_dirs = [
         "dir-a",
@@ -56,12 +56,10 @@ specs2_unit_test(
     ],
     extra_runtime_entries = [
         "dir-a",
-        "test-agent/src/test/resources"
+        "test-agent/src/test/resources",
     ],
-    srcs = [
-        "TestAgentOverrideTest.scala",
+    deps = [
+        ":abstract_test",
+        ":matchers",
     ],
-    data = [
-        "//test-agent/src/test/resources:test_files"
-    ]
 )

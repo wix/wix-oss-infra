@@ -1,3 +1,5 @@
+load("@wix_oss_infra//toolchains:jdk_repos.bzl", "repo_jdk_version")
+
 def _write_tests_macro(repository_ctx):
 
     setups = [repository_ctx.path(t) for t in repository_ctx.attr._agent_setups]
@@ -16,7 +18,7 @@ def _write_tests_macro(repository_ctx):
 tests_external_repository = repository_rule(
     implementation = _write_tests_macro,
     attrs = {
-        "jdk_version": attr.string(default = "8"),
+        "jdk_version": attr.string(default = repo_jdk_version),
         "_tests_macro": attr.label(default = "//test-agent/src/shared:tests.bzl"),
         "_agent_setups": attr.label_list(default = [
             "//test-agent/src/shared:jdk8_agent_setup.bzl",
