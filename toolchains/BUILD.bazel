@@ -1,12 +1,15 @@
 load("@io_bazel_rules_scala//scala:scala_toolchain.bzl", "scala_toolchain")
-load("@bazel_tools//tools/jdk:default_java_toolchain.bzl", "default_java_toolchain", "JDK8_JVM_OPTS", "JDK9_JVM_OPTS", "DEFAULT_JAVACOPTS")
+load("@bazel_tools//tools/jdk:default_java_toolchain.bzl", "DEFAULT_JAVACOPTS", "JDK8_JVM_OPTS", "JDK9_JVM_OPTS", "default_java_toolchain")
 load(
     "@io_bazel_rules_scala//scala:providers.bzl",
     _declare_scalac_provider = "declare_scalac_provider",
 )
+load(":jdk_repos.bzl", "repo_jdk_version")
 
 scala_toolchain(
     name = "wix_defaults_global_toolchain_impl",
+    dependency_mode = "plus-one",
+    scalac_provider_attr = "@wix_oss_infra//toolchains:scalac_default",
     scalacopts = [
         "-unchecked",
         "-deprecation",
@@ -17,8 +20,26 @@ scala_toolchain(
         "-Ywarn-unused",
         "-Ywarn-macros:after",
     ],
+    visibility = ["//visibility:public"],
+)
+
+scala_toolchain(
+    name = "unused_deps_toolchain_impl",
     dependency_mode = "plus-one",
     scalac_provider_attr = "@wix_oss_infra//toolchains:scalac_default",
+    scalacopts = [
+        "-unchecked",
+        "-deprecation",
+        "-feature",
+        "-Xmax-classfile-name",
+        "240",
+        "-Ywarn-unused-import",
+        "-Ywarn-unused",
+        "-Ywarn-macros:after",
+    ],
+    dependency_tracking_method = "ast",
+    strict_deps_mode = "warn",
+    unused_dependency_checker_mode = "warn",
     visibility = ["//visibility:public"],
 )
 
@@ -29,8 +50,15 @@ toolchain(
     visibility = ["//visibility:public"],
 )
 
+toolchain(
+    name = "unused_deps_toolchain",
+    toolchain = "unused_deps_toolchain_impl",
+    toolchain_type = "@io_bazel_rules_scala//scala:toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
 default_java_toolchain(
-    name = "wix_default_java_toolchain",
+    name = "wix_default_java8_toolchain",
     bootclasspath = ["@bazel_tools//tools/jdk:platformclasspath"],
     jvm_opts = JDK8_JVM_OPTS,
     misc = DEFAULT_JAVACOPTS + [
@@ -52,8 +80,8 @@ default_java_toolchain(
         "-deprecation",
         "-XepDisableAllChecks",
     ],
-    source_version = "11",
-    target_version = "11",
+    source_version = "8",
+    target_version = "8",
     visibility = ["//visibility:public"],
 )
 
@@ -76,6 +104,12 @@ _declare_scalac_provider(
 )
 
 alias(
+    name = "wix_default_java_toolchain",
+    actual = "wix_default_java11_toolchain" if repo_jdk_version == "11" else "wix_default_java8_toolchain",
+    visibility = ["//visibility:public"],
+)
+
+alias(
     name = "jdk8",
     actual = "//toolchains/jdk:wix_remote_jdk",
     visibility = ["//visibility:public"],
@@ -84,13 +118,13 @@ alias(
 alias(
     name = "crosstool_top",
     actual = "@rbe_default//cc:toolchain",
-    visibility = ["//visibility:public"],
     tags = ["manual"],
-    )
+    visibility = ["//visibility:public"],
+)
 
 alias(
     name = "extra_toolchains",
     actual = "@rbe_default//config:cc-toolchain",
-    visibility = ["//visibility:public"],
     tags = ["manual"],
-    )
+    visibility = ["//visibility:public"],
+)
