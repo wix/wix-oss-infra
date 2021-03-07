@@ -1,6 +1,7 @@
 load("@io_bazel_rules_scala//scala:scala.bzl", "scala_specs2_junit_test","scala_library")
 load("@io_bazel_rules_scala//specs2:specs2_junit.bzl", "specs2_junit_dependencies")
 load("@test_network_sandboxing//:network_sandboxing.bzl", "network_sandboxing")
+load("@wix_oss_infra//toolchains:jdk_repos.bzl", "repo_jdk_version")
 load("//:agent_setup.bzl", "agent_setup_flags")
 
 target_test_classes = "target/test-classes"
@@ -102,6 +103,9 @@ def _add_test_target(prefixes,
 
   agent_flags = agent_setup_flags(extra_runtime_dirs, extra_runtime_entries)
   jvm_flags.extend(agent_flags)
+
+  if repo_jdk_version == "11":
+      jvm_flags.extend(["-Djava.locale.providers=COMPAT,SPI,CLDR"])
 
   #mitigate issue where someone explicitly adds testonly in their kwargs and so we get it twice
   testonly = kwargs.pop("testonly", 1)
